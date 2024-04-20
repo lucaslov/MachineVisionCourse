@@ -1,6 +1,6 @@
 # Machine Vision Course
 
-# Exercise 1 - Object Color Tracking with OpenCV
+# Project 1 - Object Color Tracking with OpenCV
 
 This Python script utilizes the OpenCV library to track an object of a given color in a video recording. The color to be tracked is selected by pressing the left mouse button during the recording. The script allows specifying parameters such as color tolerance (hue), brightness tolerance (value), and saturation tolerance.
 
