@@ -1,5 +1,5 @@
 '''
-Object color tracker with cv.
+Object color tracker with Python cv2 library.
 '''
 
 from typing import Any, Optional, Dict, Tuple
@@ -55,7 +55,7 @@ class ColorTracker:
         set accordingly.
         """
         if self.current_frame is not None and point is not None:
-            x, y = point  # Unpack the tuple directly
+            x, y = point
 
             # Check if x and y are within the bounds of the current frame
             if 0 <= y < self.current_frame.shape[0] and 0 <= x < self.current_frame.shape[1]:
