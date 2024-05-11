@@ -5,7 +5,9 @@
 This Python script utilizes the OpenCV library to track an object of a given color in a video recording. The color to be tracked is selected by pressing the left mouse button during the recording. The script allows specifying parameters such as color tolerance (hue), brightness tolerance (value), and saturation tolerance.
 
 RUN COMMAND:
+```bash
 python3 object_color_tracking.py movingball.mp4 --hue_tolerance 15 --sat_tolerance 100 --val_tolerance 100
+```
 
 ## Features
 
