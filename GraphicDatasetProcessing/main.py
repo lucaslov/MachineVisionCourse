@@ -2,33 +2,62 @@
 This module processes and organizes images into a dataset based on user-defined parameters.
 It supports resizing, optional grayscale conversion, and categorization of images.
 """
-
+from typing import List, Dict, Union, Tuple
+from dataclasses import dataclass
 import os
 import argparse
 from PIL import Image
 import pandas as pd
 
+@dataclass
+class Config:
+    """
+    A class to store configuration parameters for image processing.
+
+    Attributes:
+        source_path: Path to the directory containing source images.
+        output_path: Path where processed images and statistics will be saved.
+        size: Target size for the output images as a tuple of width and height.
+        grayscale: Whether to convert images to grayscale or not.
+        image_format: The format in which to save the processed images ('png' or 'jpg').
+    """
+    source_path: str
+    output_path: str
+    size: Tuple[int, int]
+    grayscale: bool
+    image_format: str
+
 class ImageProcessor:
     """
-    A class for processing and organizing images based on given parameters.
+    A processor for images that handles resizing, optional grayscale conversion, and categorization
+    into folders based on the original categories of images. It also generates statistics about the
+    processed images.
+    
+    Attributes:
+        source_path (str): The path where source images are located.
+        output_path (str): The destination path for processed images.
+        size (Tuple[int, int]): The dimensions to which images should be resized.
+        grayscale (bool): Indicates if images should be converted to grayscale.
+        image_format (str): The format for saving the processed images.
+        category_stats (List[Dict[str, Union[int, str]]]): A list of dictionaries containing
+            statistics about the processing of images in each category.
     """
-
-    def __init__(self, config):
+    def __init__(self, config: Config) -> None:
         """
         Initializes an ImageProcessor instance using a configuration object.
 
         Args:
-            config (object): Configuration object containing source_path, output_path,
+            config (Config): Configuration object containing source_path, output_path,
                              size, grayscale, and image_format.
         """
-        self.source_path = config.source_path
-        self.output_path = config.output_path
-        self.size = config.size
-        self.grayscale = config.grayscale
-        self.image_format = config.image_format
-        self.category_stats = []
+        self.source_path: str = config.source_path
+        self.output_path: str = config.output_path
+        self.size: Tuple[int, int] = config.size
+        self.grayscale: bool = config.grayscale
+        self.image_format: str = config.image_format
+        self.category_stats: List[Dict[str, Union[int, str]]] = []
 
-    def process_images(self):
+    def process_images(self) -> None:
         """
         Processes and organizes images into categories based on the configuration.
         """
@@ -65,12 +94,12 @@ class ImageProcessor:
                     abandoned_count += 1
 
             self.category_stats.append({
-                'Category': category,
-                'Number of images': processed_count,
-                'Number of abandoned images': abandoned_count
+                'category': category,
+                'img_count': processed_count,
+                'abandoned_count': abandoned_count
             })
 
-    def generate_csv(self):
+    def generate_csv(self) -> None:
         """
         Generates a CSV file with the statistics of processed images.
         """
@@ -79,7 +108,7 @@ class ImageProcessor:
         df.to_csv(csv_path, index=False)
         print(f'Saved statistics to {csv_path}')
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """
     Parses command-line arguments.
 
@@ -95,19 +124,20 @@ def parse_arguments():
         required=True, help='Output image size in WIDTHxHEIGHT format.')
     parser.add_argument('-g', '--grayscale', \
         action='store_true', help='Convert images to grayscale.')
-    parser.add_argument('-f', '--format', type=str, choices=['png', 'jpg'], \
-        required=True, help='Output image format.')
+    parser.add_argument('-f', '--format', type=str, \
+        choices=['png', 'jpg'], required=True, help='Output image format.')
     return parser.parse_args()
 
-def main():
+def main() -> None:
     """
     Main function to orchestrate the image processing and organization.
     """
     args = parse_arguments()
     size = tuple(map(int, args.size.split('x')))
+    if len(size) != 2:
+        raise ValueError("Size must be two integers separated by 'x'.")
 
-    # Create a configuration object
-    config = argparse.Namespace(
+    config = Config(
         source_path=args.source,
         output_path=args.output,
         size=size,
@@ -119,6 +149,5 @@ def main():
     processor.process_images()
     processor.generate_csv()
 
-# Ensure the file ends with a newline
 if __name__ == '__main__':
     main()
